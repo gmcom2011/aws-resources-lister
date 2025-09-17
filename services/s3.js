@@ -77,7 +77,7 @@ export async function listS3Resources(config) {
             const size = await getBucketSize(bucket, s3Client)
             results.push({ bucket, size, policy: JSON.stringify(policy) })
         } catch (error) {
-            results.push({ bucket, size, policy: JSON.stringify(policy) })
+            results.push({ bucket, size: "0 MB", policy: JSON.stringify(policy) })
         }
     }
     return results;
