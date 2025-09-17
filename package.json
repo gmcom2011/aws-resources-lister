@@ -1,0 +1,25 @@
+{
+  "name": "list-resource",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-ecr": "^3.879.0",
+    "@aws-sdk/client-ecs": "^3.879.0",
+    "@aws-sdk/client-kms": "^3.879.0",
+    "@aws-sdk/client-s3": "^3.886.0",
+    "@aws-sdk/client-ses": "^3.879.0",
+    "@aws-sdk/client-sns": "^3.879.0",
+    "@aws-sdk/client-sqs": "^3.879.0",
+    "@aws-sdk/client-ssm": "^3.879.0",
+    "@aws-sdk/credential-providers": "^3.883.0",
+    "xlsx": "^0.18.5"
+  }
+}
