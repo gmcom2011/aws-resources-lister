@@ -8,6 +8,9 @@ import { listKmsKeys } from "./services/kms.js";
 import generateEcrReport from "./services/ecr.js"; // <-- NEW   
 import listAllEndpointsAndTargets from "./services/api-gateway.js"; // <-- NEW   
 import { listS3Resources } from "./services/s3.js"; // <-- NEW
+import { listAllTableConfigs } from './services/dynamodb.js'
+import { listAndDescribeStreams } from './services/kinesis-stream.js'
+import { listDataFirehose } from './services/firehose.js'
 import Config from "./config.js";
 import { fromIni } from "@aws-sdk/credential-providers";
 const config = { region: Config.REGION, credentials: fromIni({ profile: Config.PROFILE }) };
@@ -17,7 +20,20 @@ const generateReport = async () => {
 
     try {
         // Run all list operations in parallel
-        const [sqsQueues, snsTopics, ssmParameters, sesIdentities, ecsResources, kmsKeys, EcrReport, API_Gateway, S3Resources] = await Promise.all([
+        const [
+            sqsQueues,
+            snsTopics,
+            ssmParameters,
+            sesIdentities,
+            ecsResources,
+            kmsKeys,
+            EcrReport,
+            API_Gateway,
+            S3Resources,
+            dynamoDb,
+            kinesisStream,
+            dataFirehose
+        ] = await Promise.all([
             listSqsQueues(config),
             listSnsTopics(config),
             listSsmParameters(config),
@@ -26,15 +42,11 @@ const generateReport = async () => {
             listKmsKeys(config),
             generateEcrReport(config), // <-- NEW
             listAllEndpointsAndTargets(config), // <-- NEW
-            listS3Resources(config)
+            listS3Resources(config),
+            listAllTableConfigs(config),
+            listAndDescribeStreams(config),
+            listDataFirehose(config)
         ]);
-
-        console.log(`Found ${sqsQueues.length} SQS Queues.`);
-        console.log(`Found ${snsTopics.length} SNS Topics.`);
-        console.log(`Found ${ssmParameters.length} SSM Parameters.`);
-        console.log(`Found ${sesIdentities.length} SES Identities.`);
-        console.log(`Processed ${ecsResources.length} ECS service entries.`);
-        console.log(`Found ${kmsKeys.length} customer-managed KMS Keys.`);
 
         const sheetsData = {
             SQS: sqsQueues,
@@ -45,9 +57,12 @@ const generateReport = async () => {
             KMS_Keys: kmsKeys,
             ECR: EcrReport,
             API_Gateway: API_Gateway, // <-- NEW
-            S3: S3Resources
+            S3: S3Resources,
+            dynamoDb,
+            kinesisStream,
+            dataFirehose
         };
-
+        // console.log(JSON.stringify(sheetsData, null, 2))
         exportToExcel(sheetsData, `aws_resources_report-${Config.REGION}-${Config.PROFILE}.xlsx`);
 
     } catch (error) {
