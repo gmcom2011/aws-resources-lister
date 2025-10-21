@@ -71,18 +71,20 @@ export async function listAllTableConfigs(config) {
         return;
     }
 
-    console.log("\nFetching configuration for each table...");
+    // console.log("\nFetching configuration for each table...");
 
     // Use Promise.all to fetch details in parallel
     const configPromises = tableNames.map(async (tableName) => {
         try {
             const configure = await getTableConfig(config, tableName);
             if (configure) {
+
+                console.error(JSON.stringify(configure, null, 2));
                 allConfigs.push({
                     TableName: configure.TableName,
                     BillingMode: configure.BillingModeSummary ? configure.BillingModeSummary.BillingMode : "PAY",
-                    KMS: configure.SSEDescription.KMSMasterKeyArn,
-                    EncryptStatus: configure.SSEDescription.Status,
+                    KMS: configure.SSEDescription ? configure.SSEDescription.KMSMasterKeyArn : "N/A",
+                    EncryptStatus: configure.SSEDescription ?configure.SSEDescription.Status: "N/A",
                     GlobalSecondaryIndexes: configure.GlobalSecondaryIndexes ? configure.GlobalSecondaryIndexes.length : 0,
                     DeletionProtectionEnabled: configure.DeletionProtectionEnabled
                 })
@@ -96,8 +98,8 @@ export async function listAllTableConfigs(config) {
     await Promise.all(configPromises);
 
     // Output the full configuration object
-    console.log("\n--- All Table Configurations ---");
-    console.log(JSON.stringify(allConfigs, null, 2));
+    // console.log("\n--- All Table Configurations ---");
+    // console.log(JSON.stringify(allConfigs, null, 2));
     return allConfigs
 
 

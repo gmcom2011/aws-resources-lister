@@ -11,6 +11,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-acm": "^3.894.0",
+    "@aws-sdk/client-acm-pca": "^3.894.0",
+    "@aws-sdk/client-cloudformation": "^3.913.0",
+    "@aws-sdk/client-cloudtrail": "^3.913.0",
     "@aws-sdk/client-dynamodb": "^3.890.0",
     "@aws-sdk/client-ecr": "^3.879.0",
     "@aws-sdk/client-ecs": "^3.879.0",
@@ -22,6 +26,8 @@
     "@aws-sdk/client-sns": "^3.879.0",
     "@aws-sdk/client-sqs": "^3.879.0",
     "@aws-sdk/client-ssm": "^3.879.0",
+    "@aws-sdk/client-waf": "^3.894.0",
+    "@aws-sdk/client-wafv2": "^3.894.0",
     "@aws-sdk/credential-providers": "^3.883.0",
     "main": "^1000.0.1",
     "xlsx": "^0.18.5"

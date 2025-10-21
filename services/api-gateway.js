@@ -16,14 +16,14 @@ import {
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const listAllEndpointsAndTargets = async (config) => {
-const client = new APIGatewayClient(config);
-    console.log("Fetching all API Gateway REST APIs and configurations...");
+    const client = new APIGatewayClient(config);
+    // console.log("Fetching all API Gateway REST APIs and configurations...");
     const allResults = []; // Store all results before filtering
 
     try {
         const { items: allUsagePlans } = await client.send(new GetUsagePlansCommand({}));
         const { items: apis } = await client.send(new GetRestApisCommand({ limit: 500 }));
-        console.log(`Found ${apis.length} REST APIs.`);
+        // console.log(`Found ${apis.length} REST APIs.`);
         if (!apis || apis.length === 0) {
             console.log("No REST APIs found in this region.");
             return;
@@ -43,7 +43,7 @@ const client = new APIGatewayClient(config);
             const { items: resources } = await client.send(
                 new GetResourcesCommand({ restApiId: api.id })
             );
-            console.log(`  Found ${resources.length} resources in API: ${api.name}`);
+            // console.log(`  Found ${resources.length} resources in API: ${api.name}`);
 
             for (const resource of resources) {
                 if (resource.resourceMethods) {
@@ -63,20 +63,21 @@ const client = new APIGatewayClient(config);
                                 new GetIntegrationCommand({ restApiId: api.id, resourceId: resource.id, httpMethod: method })
                             );
 
-                            console.log(JSON.stringify(integration, null, 2))
+                            // console.log(JSON.stringify(integration, null, 2))
                             allResults.push({
                                 "API Name": api.name,
                                 "Method": method,
                                 "Path": resource.path,
                                 "Authorizer": authorizerInfo,
                                 "API Key Required": methodDetails.apiKeyRequired ? 'Yes' : 'No',
-                                "Target Type": integration.uri.split(':')[4] ? `${integration.uri.split(':')[4]}` : integration.uri,
+                                "Target Type": integration.uri ? integration.uri.split(':')[4] ? `${integration.uri.split(':')[4]}` : integration.uri : "N/A",
                                 "Target URI": integration.uri && integration.connectionType !== 'VPC_LINK' ? `${integration.uri.split(':')[integration.uri.split(':').length - 2]}:${integration.uri.split(':')[integration.uri.split(':').length - 1].split('/')[0]}` : "N/A",
                                 "VPC Link ID": integration.connectionType === 'VPC_LINK' ? integration.connectionId : 'N/A',
                                 "Usage Plans": associatedPlans,
                             });
                         } catch (error) {
                             // Gracefully skip methods without integrations
+                            console.log(resource.resourceMethods)
                             if (error.name !== "NotFoundException") {
                                 console.error(`  Error fetching details for ${method} ${resource.path}:`, error);
                             }

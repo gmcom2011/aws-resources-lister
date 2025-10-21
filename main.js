@@ -11,6 +11,7 @@ import { listS3Resources } from "./services/s3.js"; // <-- NEW
 import { listAllTableConfigs } from './services/dynamodb.js'
 import { listAndDescribeStreams } from './services/kinesis-stream.js'
 import { listDataFirehose } from './services/firehose.js'
+import { ListCertificates } from './services/certificate.js'
 import Config from "./config.js";
 import { fromIni } from "@aws-sdk/credential-providers";
 const config = { region: Config.REGION, credentials: fromIni({ profile: Config.PROFILE }) };
@@ -32,7 +33,8 @@ const generateReport = async () => {
             S3Resources,
             dynamoDb,
             kinesisStream,
-            dataFirehose
+            dataFirehose,
+            certifacates
         ] = await Promise.all([
             listSqsQueues(config),
             listSnsTopics(config),
@@ -45,7 +47,8 @@ const generateReport = async () => {
             listS3Resources(config),
             listAllTableConfigs(config),
             listAndDescribeStreams(config),
-            listDataFirehose(config)
+            listDataFirehose(config),
+            ListCertificates(config)
         ]);
 
         const sheetsData = {
@@ -60,10 +63,12 @@ const generateReport = async () => {
             S3: S3Resources,
             dynamoDb,
             kinesisStream,
-            dataFirehose
+            dataFirehose,
+            certifacates
         };
         // console.log(JSON.stringify(sheetsData, null, 2))
-        exportToExcel(sheetsData, `aws_resources_report-${Config.REGION}-${Config.PROFILE}.xlsx`);
+        const date = new Date().toISOString().replace(/[:.]/g, '-').split("T");
+        exportToExcel(sheetsData, `aws_resources_report-${Config.REGION}-${Config.PROFILE}-${date}.xlsx`);
 
     } catch (error) {
         console.error("❌ An error occurred during report generation:", error);
